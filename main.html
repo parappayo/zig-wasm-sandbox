@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+	<title>Zig WebAssembly Test</title>
+</head>
+
+<body>
+<script type="text/javascript">
+	fetch('main.wasm')
+	.then(response => response.arrayBuffer())
+	.then(wasmBytes => {
+		// WebAssembly.instantiateStreaming only works when the web server
+		// is clever enough to respond with Content-Type application/wasm
+		// otherwise this works when the Content-Type is application/octet-stream
+		WebAssembly.instantiate(
+			wasmBytes,
+			{
+				env: {
+					print: (value) => { console.log(typeof(value)); console.log(value); }
+				}
+			})
+		.then(mainObj => {
+			mainObj.instance.exports.main();
+		});
+	});
+</script>
+</body>
+
+</html>
